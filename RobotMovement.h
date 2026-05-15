@@ -1,2 +1,2 @@
 extern void robotSetup();
-extern void elaborateCommand(String inputString);
+extern void move(byte cmd);

@@ -3,10 +3,10 @@
 #pragma region Parameters
 
 //DRV8833 Pinout
-const int IN1 = 4; //left wheels spinning backward
-const int IN2 = 5; //left wheels spinning forward
-const int IN3 = 6; //right wheels spinning backward
-const int IN4 = 7; //right wheels spinning forward
+const int IN1 = 4;  //left wheels spinning backward
+const int IN2 = 5;  //left wheels spinning forward
+const int IN3 = 6;  //right wheels spinning backward
+const int IN4 = 7;  //right wheels spinning forward
 
 //DRV8833 LEDs
 const int led_LF = 2;   //Left front led
@@ -16,7 +16,6 @@ const int led_RB = 11;  //Right back led
 
 float duration, distance;
 
-//Robot movement commands
 #define commandStop "st"
 #define commandForward "fw"
 #define commandBackward "bw"
@@ -25,10 +24,19 @@ float duration, distance;
 #define commandRotateCW "cw"
 #define commandRotateCCW "cc"
 
-//Bluetooth response string
-#define bluetoothTurnOff "+DISC:SUCCESS"
+
 
 #pragma endregion Parameters
+
+enum MoveDirection : byte {
+  Stop = 0,
+  Forward = 1,
+  Backward = 2,
+  TurnLeft = 3,
+  TurnRight = 4,
+  RotateCW = 5,
+  RotateCCW = 6
+};
 
 //Turn off all LEDs
 void turnOffAllLEDs() {
@@ -146,31 +154,48 @@ void robotSetup() {
 
   Serial.println("Init Car functions");
   stop();
-  Serial.println("Init Car functions done"); 
+  Serial.println("Init Car functions done");
 }
 
-//Elaborates the received string input as a command
-void elaborateCommand(String inputString) {
 
-    inputString.trim();
-    Serial.println("Received command from serial:" + inputString);
+void move(byte cmd) {
 
-    const char* inputCharArray = inputString.c_str();
+  Serial.print("Moving with: ");
+  Serial.println(cmd);
 
-    if (strcmp(inputCharArray, commandStop) == 0 || strcmp(inputCharArray, bluetoothTurnOff) == 0) {
+  switch (cmd) {
+
+    case Stop:
       stop();
-    } else if (strcmp(inputCharArray, commandForward) == 0) {
-      forward();
-    } else if (strcmp(inputCharArray, commandBackward) == 0) {
-      backward();
-    } else if (strcmp(inputCharArray, commandTurnRight) == 0) {
-      turnRight();
-    } else if (strcmp(inputCharArray, commandTurnLeft) == 0) {
-      turnLeft();
-    } else if (strcmp(inputCharArray, commandRotateCW) == 0) {
-      rotateCW();
-    } else if (strcmp(inputCharArray, commandRotateCCW) == 0) {
-      rotateCCW();
-    }
-}
+      break;
 
+    case Forward:
+      forward();
+      break;
+
+    case Backward:
+      backward();
+      break;
+
+    case TurnRight:
+      turnRight();
+      break;
+
+    case TurnLeft:
+      turnLeft();
+      break;
+
+    case RotateCW:
+      rotateCW();
+      break;
+
+    case RotateCCW:
+      rotateCCW();
+      break;
+
+    default:
+      Serial.println("Error");
+      stop();
+      break;
+  }
+}
