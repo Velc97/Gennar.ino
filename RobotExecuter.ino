@@ -1,16 +1,12 @@
 #include "RobotMovement.h"
-#include "RobotSensors.h"
 #include "RobotBluetooth.h"
 
-//#pragma region Parameters
-
-//#pragma endregion Parameters
-
-//#pragma region Arduino
+#pragma region Arduino
 
 void setup() {
   Serial.begin(9600);
   robotSetup();
+  bleSetup();
   delay(3000);
 }
 
@@ -33,7 +29,11 @@ void loop() {
     //Elaborating command
     elaborateCommand(inputBuffer);
   }
+
+  /*delay(10000);
+  Serial.println("Sending location");
+  sendLocation(123456, 654321); */
 }
 
-//#pragma endregion Arduino
+#pragma endregion Arduino
 
