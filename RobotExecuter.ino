@@ -1,17 +1,12 @@
 #include "RobotMovement.h"
 #include "RobotSensors.h"
+#include "RobotBluetooth.h"
 
-char inputBuffer[32];
+//#pragma region Parameters
 
-enum CommandType : byte {
-  Location = 0x52,
-  Move = (byte)'M',
-};
+//#pragma endregion Parameters
 
-//Bluetooth response string
-#define bluetoothTurnOff "+DISC:SUCCESS"
-
-#pragma region Arduino
+//#pragma region Arduino
 
 void setup() {
   Serial.begin(9600);
@@ -20,10 +15,12 @@ void setup() {
 }
 
 void loop() {
-
   //Reading serial value
   if (Serial.available()) {
-    
+
+    //Buffer for received messages
+    char inputBuffer[32];
+
     //Reading the buffer
     int len = Serial.readBytesUntil('\n', inputBuffer, sizeof(inputBuffer) - 1);
     inputBuffer[len] = '\0';
@@ -38,35 +35,5 @@ void loop() {
   }
 }
 
-#pragma endregion Arduino
+//#pragma endregion Arduino
 
-#pragma region Methods
-
-//Elaborates the received string input as a command
-void elaborateCommand(const char* cmd) {
-
-  //Printing received command for debugging
-  Serial.print("Received command: ");
-  Serial.println(cmd);
-
-  //Disconnection
-  if (strcmp(cmd, bluetoothTurnOff) == 0) {
-      move(0);  //Stopping the robot
-    }
-
-  //Printing
-  char opcode = cmd[0];
-  Serial.print("Parsing opcode: ");
-  Serial.println(opcode);
-
-  //Command parsing
-  switch (opcode) {
-    case Move:
-      move(cmd[1]);
-      break;
-    default:
-      Serial.println("Unknown command");
-  }
-}
-
-#pragma endregion Methods

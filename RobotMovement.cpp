@@ -135,7 +135,6 @@ void stop() {
   digitalWrite(IN4, LOW);
 }
 
-
 //Initialize robot pins related to it's movement
 void robotSetup() {
   Serial.println("Init DRV8833 driver");
@@ -156,7 +155,6 @@ void robotSetup() {
   stop();
   Serial.println("Init Car functions done");
 }
-
 
 void move(byte cmd) {
 

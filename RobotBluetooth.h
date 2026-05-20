@@ -1,0 +1,1 @@
+extern void elaborateCommand(const char* cmd);
