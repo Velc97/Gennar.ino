@@ -1,5 +1,6 @@
 #include "RobotMovement.h"
 #include "RobotBluetooth.h"
+#include "UltrasonicSensor.h"
 
 #pragma region Arduino
 
@@ -29,6 +30,12 @@ void loop() {
     //Elaborating command
     elaborateCommand(inputBuffer);
   }
+
+  //Getting and sending ultrasonic distance
+  delay(10000);
+  Serial.print("Sending ultrasonic distance: ");
+  Serial.println(get_distance());
+  sendUltrasonicDistance(get_distance());
 
   /*delay(10000);
   Serial.println("Sending location");

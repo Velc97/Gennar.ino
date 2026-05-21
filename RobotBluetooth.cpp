@@ -1,7 +1,7 @@
 #include <arduino.h>
 #include <SoftwareSerial.h>
 #include "RobotMovement.h"
-#include "UltrasonicSensor.h"
+
 
 #pragma region Parameters
 
@@ -15,7 +15,8 @@ SoftwareSerial bleSerial(-1, 8);
 //Command type enumeration for message parsing
 enum CommandType : byte {
   Location = 0x52,
-  Move = (byte)'M'
+  Move = (byte)'M',
+  Ultrasonic = (byte)'U'
 };
 
 #pragma endregion Parameters
@@ -80,17 +81,24 @@ void sendPacket(byte* data, size_t len) {
 
 void sendLocation(int lat, int lon)
 {
-    byte packet[11];
+    byte packet[3 + sizeof(int) * 2];
 
     packet[0] = (byte)CommandType::Location;
-
-    memcpy(&packet[1], &lat, 4);
-    memcpy(&packet[5], &lon, 4);
+    memcpy(&packet[1], &lat, sizeof(int));
+    memcpy(&packet[1 + sizeof(int)], &lon, sizeof(int));
 
     sendPacket(packet, sizeof(packet));
 }
 
+//Sends the ultrasonic sensor distance
+void sendUltrasonicDistance(float distance) {
+    byte packet[3 + sizeof(float)];
 
+    packet[0] = (byte)CommandType::Ultrasonic;
+    memcpy(&packet[1], &distance, sizeof(float));
+
+    sendPacket(packet, sizeof(packet));
+}
 
 
 

@@ -7,7 +7,7 @@
 const int trigPin = 10; //Trigger pin
 const int echoPin= 9; //Echo pin
 #define MAX_DISTANCE 30 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
-NewPing sonarFront(trigPin, echoPin, MAX_DISTANCE); //Sonar class
+NewPing sonar(trigPin, echoPin, MAX_DISTANCE); //Sonar class
 
 #pragma endregion Parameters
 
@@ -27,7 +27,7 @@ float get_distance() {
   delay(40);  //Wait 500ms between pings (about 2 pings/sec). 29ms should be the shortest delay between pings.
 
   //ping() sends ping, then gets ping time in microseconds (uS).
-  return sonarFront.ping() / US_ROUNDTRIP_CM;
+  return sonar.ping() / US_ROUNDTRIP_CM;
 }
 
 #pragma endregion Methods
