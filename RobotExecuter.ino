@@ -2,6 +2,13 @@
 #include "RobotBluetooth.h"
 #include "UltrasonicSensor.h"
 
+#pragma region Parameters
+
+unsigned long previousUltrasonicMillis = 0; //For ultrasonic sensor scheduling
+const unsigned long ultrasonicInterval = 3000; //Ultrasonic sensor scheduling interval in ms
+
+#pragma endregion Parameters
+
 #pragma region Arduino
 
 void setup() {
@@ -31,11 +38,7 @@ void loop() {
     elaborateCommand(inputBuffer);
   }
 
-  //Getting and sending ultrasonic distance
-  delay(10000);
-  Serial.print("Sending ultrasonic distance: ");
-  Serial.println(get_distance());
-  sendUltrasonicDistance(get_distance());
+  handleUltrasonicTask();
 
   /*delay(10000);
   Serial.println("Sending location");
@@ -43,4 +46,26 @@ void loop() {
 }
 
 #pragma endregion Arduino
+
+#pragma region Methods
+
+//Gets and sets ultrasonic distance from sensor to connected device
+void handleUltrasonicTask() {
+
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousUltrasonicMillis >= ultrasonicInterval) {
+
+    previousUltrasonicMillis = currentMillis;
+
+    float distance = get_distance();
+
+    Serial.print("Sending ultrasonic distance: ");
+    Serial.println(distance);
+
+    sendUltrasonicDistance(distance);
+  }
+}
+
+#pragma endregion Methods
 

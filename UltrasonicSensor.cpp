@@ -24,7 +24,7 @@ void sensorsSetup()
 
 //Gets the distance from the ultrasonic sensor in cm. Returns 0 if limit has exceded
 float get_distance() {
-  delay(40);  //Wait 500ms between pings (about 2 pings/sec). 29ms should be the shortest delay between pings.
+  delay(40);  //Wait delay between pings (about 2 pings/sec). 29ms should be the shortest delay between pings.
 
   //ping() sends ping, then gets ping time in microseconds (uS).
   return sonar.ping() / US_ROUNDTRIP_CM;
