@@ -156,6 +156,8 @@ void robotSetup() {
   Serial.println("Init Car functions done");
 }
 
+
+//Moves the robot
 void move(byte cmd) {
 
   Serial.print("Moving with: ");

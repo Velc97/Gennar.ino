@@ -1,6 +1,9 @@
+#define DEBUG 1 //For debugging purposses
+
 #include "RobotMovement.h"
 #include "RobotBluetooth.h"
 #include "UltrasonicSensor.h"
+#include "UVSensor.h"
 
 #pragma region Parameters
 
@@ -39,6 +42,7 @@ void loop() {
   }
 
   handleUltrasonicTask();
+  //getFullScan();
 
   /*delay(10000);
   Serial.println("Sending location");
@@ -65,6 +69,13 @@ void handleUltrasonicTask() {
 
     sendUltrasonicDistance(distance);
   }
+}
+
+//Obtains a full scan
+void getFullScan() {
+  Serial.print("Stopping the robot for scanning");
+  move(0);
+  getUVIndex();
 }
 
 #pragma endregion Methods

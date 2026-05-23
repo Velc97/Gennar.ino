@@ -13,15 +13,6 @@ NewPing sonar(trigPin, echoPin, MAX_DISTANCE); //Sonar class
 
 #pragma region Methods
 
-void sensorsSetup()
-{
-  Serial.println("Init ultrasonic sensor...");
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-  delay(50);
-  Serial.println("Init ultrasonic sensor...OK!");
-}
-
 //Gets the distance from the ultrasonic sensor in cm. Returns 0 if limit has exceded
 float get_distance() {
   delay(40);  //Wait delay between pings (about 2 pings/sec). 29ms should be the shortest delay between pings.
