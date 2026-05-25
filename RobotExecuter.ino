@@ -4,6 +4,7 @@
 #include "RobotBluetooth.h"
 #include "UltrasonicSensor.h"
 #include "UVSensor.h"
+#include "BarometricSensor.h"
 
 #pragma region Parameters
 
@@ -18,6 +19,7 @@ void setup() {
   Serial.begin(9600);
   robotSetup();
   bleSetup();
+  setupBarometricSensor(102500);
   delay(3000);
 }
 
@@ -47,6 +49,8 @@ void loop() {
   /*delay(10000);
   Serial.println("Sending location");
   sendLocation(123456, 654321); */
+
+  delay(3000);
 }
 
 #pragma endregion Arduino
@@ -76,7 +80,11 @@ void getFullScan() {
   Serial.print("Stopping the robot for scanning");
   move(0);
   getUVIndex();
+  getTemperature();
+  getPressure();
+  getAltitude();
 }
 
 #pragma endregion Methods
+
 
