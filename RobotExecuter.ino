@@ -5,6 +5,7 @@
 #include "UltrasonicSensor.h"
 #include "UVSensor.h"
 #include "BarometricSensor.h"
+#include "LumensSensor.h"
 
 #pragma region Parameters
 
@@ -20,6 +21,7 @@ void setup() {
   robotSetup();
   bleSetup();
   setupBarometricSensor(102500);
+  setupLumensSensor();
   delay(3000);
 }
 
@@ -49,6 +51,8 @@ void loop() {
   /*delay(10000);
   Serial.println("Sending location");
   sendLocation(123456, 654321); */
+
+  getLumens();
 
   delay(3000);
 }

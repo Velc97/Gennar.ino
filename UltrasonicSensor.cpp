@@ -1,4 +1,3 @@
-#include <arduino.h>
 #include <NewPing.h>
 
 #pragma region Parameters

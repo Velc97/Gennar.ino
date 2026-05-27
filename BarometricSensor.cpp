@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <Adafruit_BMP085.h>
 
 Adafruit_BMP085 bmp;
