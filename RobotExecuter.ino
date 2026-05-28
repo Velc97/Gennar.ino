@@ -6,6 +6,7 @@
 #include "UVSensor.h"
 #include "BarometricSensor.h"
 #include "LumensSensor.h"
+#include "GasSensor.h"
 
 #pragma region Parameters
 
@@ -22,7 +23,7 @@ void setup() {
   bleSetup();
   setupBarometricSensor(102500);
   setupLumensSensor();
-  delay(3000);
+  setupGasSensor(A0, 5000);
 }
 
 void loop() {
@@ -52,7 +53,7 @@ void loop() {
   Serial.println("Sending location");
   sendLocation(123456, 654321); */
 
-  getLumens();
+  getGasPercentage();
 
   delay(3000);
 }
@@ -87,6 +88,7 @@ void getFullScan() {
   getTemperature();
   getPressure();
   getAltitude();
+  getLumens();
 }
 
 #pragma endregion Methods
