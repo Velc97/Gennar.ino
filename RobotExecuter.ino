@@ -7,6 +7,7 @@
 #include "BarometricSensor.h"
 #include "LumensSensor.h"
 #include "GasSensor.h"
+#include "HumiditySensor.h"
 
 #pragma region Parameters
 
@@ -24,6 +25,7 @@ void setup() {
   setupBarometricSensor(102500);
   setupLumensSensor();
   setupGasSensor(A0, 5000);
+  setupDTH11Sensor(3);
 }
 
 void loop() {
@@ -53,7 +55,7 @@ void loop() {
   Serial.println("Sending location");
   sendLocation(123456, 654321); */
 
-  getGasPercentage();
+  
 
   delay(3000);
 }
@@ -89,6 +91,8 @@ void getFullScan() {
   getPressure();
   getAltitude();
   getLumens();
+  getGasPercentage();
+  DTH11Values dth11Values = getDTH11Values();
 }
 
 #pragma endregion Methods
