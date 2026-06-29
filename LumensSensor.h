@@ -1,2 +1,2 @@
 extern float getLumens();
-extern void setupLumensSensor();
+extern bool setupLumensSensor();

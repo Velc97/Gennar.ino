@@ -4,46 +4,28 @@ Adafruit_BMP085 bmp;
 
 float seaLevelPressure; //Pa sea pressure
 
-void setupBarometricSensor(float value) {
+//Sensor setup
+bool setupBarometricSensor(float value) {
   seaLevelPressure = value;
 
   if (!bmp.begin()) {
-    Serial.println("BMP085 not found!");
+    return false;
   }
+  
+  return true;
 }
 
-//Temperature
+//Temperature in Celsius degree
 float getTemperature() {
-  float t = bmp.readTemperature();
-
-  Serial.print("Temperature = ");
-  Serial.print(t);
-  Serial.println(" *C");
-
-  return t;
+  return bmp.readTemperature();
 }
 
-//Pressure
+//Pressure in Pascal
 long getPressure() {
-  long p = bmp.readPressure();
-
-  Serial.print("Pressure = ");
-  Serial.print(p);
-  Serial.println(" Pa");
-
-  return p;
+  return bmp.readPressure();
 }
 
-//Altitude
+//Altitude in Meters
 float getAltitude() {
-  long pressure = bmp.readPressure();
-
-  //Usa pressione standard o calibrata
-  float altitude = bmp.readAltitude(seaLevelPressure);
-
-  Serial.print("Altitude = ");
-  Serial.print(altitude);
-  Serial.println(" m");
-
-  return altitude;
+  return bmp.readAltitude(seaLevelPressure);
 }

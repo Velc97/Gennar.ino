@@ -11,9 +11,7 @@ const int numSamples = 100; //Number of scans for average estimation
 
 //Setup of the sensor pin
 void setupUV() {
-  Serial.println("Initializing UV sensor");
   pinMode(uvPin, INPUT);
-  Serial.println("UV sensor initialized");
 }
 
 //Gets the UV index value from sensor
@@ -25,12 +23,6 @@ int getUVIndex() {
     sum += analogRead(uvPin);
     delay(5);
   }
-
-  Serial.print("Sum: ");
-  Serial.print(sum);
-  Serial.print(" | ");
-
-
 
   //ADC and voltage calculation
   float adc = sum / (float)numSamples;
@@ -50,19 +42,6 @@ int getUVIndex() {
   else if (voltage < 0.976) uvIndex = 9;
   else if (voltage < 1.079) uvIndex = 10;
   else uvIndex = 11;
-
-  //ADC value
-  Serial.print("ADC: ");
-  Serial.print(adc);
-
-  //Voltage value
-  Serial.print(" | Voltage: ");
-  Serial.print(voltage, 3);
-  Serial.print(" V");
-
-  //Index value
-  Serial.print(" | UV Index: ");
-  Serial.println(uvIndex);
 
   return uvIndex;
 }

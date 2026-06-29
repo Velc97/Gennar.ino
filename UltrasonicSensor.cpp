@@ -15,9 +15,8 @@ NewPing sonar(trigPin, echoPin, MAX_DISTANCE); //Sonar class
 //Gets the distance from the ultrasonic sensor in cm. Returns 0 if limit has exceded
 float get_distance() {
   delay(40);  //Wait delay between pings (about 2 pings/sec). 29ms should be the shortest delay between pings.
-
-  //ping() sends ping, then gets ping time in microseconds (uS).
-  return sonar.ping() / US_ROUNDTRIP_CM;
+  
+  return sonar.ping() / US_ROUNDTRIP_CM; //ping() sends ping, then gets ping time in microseconds (uS).
 }
 
 #pragma endregion Methods

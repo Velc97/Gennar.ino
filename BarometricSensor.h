@@ -1,4 +1,4 @@
-extern void setupBarometricSensor(float value);
+extern bool setupBarometricSensor(float value);
 extern float getTemperature();
 extern long getPressure();
 extern float getSealevelPressure();

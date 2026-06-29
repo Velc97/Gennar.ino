@@ -14,20 +14,7 @@ const int led_RF = A2;  //Right front led
 const int led_LB = 12;  //Left back led
 const int led_RB = 11;  //Right back led
 
-float duration, distance;
-
-#define commandStop "st"
-#define commandForward "fw"
-#define commandBackward "bw"
-#define commandTurnRight "tr"
-#define commandTurnLeft "tl"
-#define commandRotateCW "cw"
-#define commandRotateCCW "cc"
-
-
-
-#pragma endregion Parameters
-
+//Directions
 enum MoveDirection : byte {
   Stop = 0,
   Forward = 1,
@@ -37,6 +24,51 @@ enum MoveDirection : byte {
   RotateCW = 5,
   RotateCCW = 6
 };
+
+#pragma endregion Parameters
+
+//Set the output for leds and wheels
+inline void setOutputs(
+    bool lf, bool rf, bool lb, bool rb,
+    bool in1, bool in2, bool in3, bool in4)
+{
+    // -------- PORTD --------
+    // D2 = LF
+    // D4 = IN1
+    // D5 = IN2
+    // D6 = IN3
+    // D7 = IN4
+
+    byte portD = PORTD;
+
+    bitWrite(portD, PD2, lf);
+    bitWrite(portD, PD4, in1);
+    bitWrite(portD, PD5, in2);
+    bitWrite(portD, PD6, in3);
+    bitWrite(portD, PD7, in4);
+
+    PORTD = portD;
+
+    // -------- PORTB --------
+    // D11 = RB
+    // D12 = LB
+
+    byte portB = PORTB;
+
+    bitWrite(portB, PB3, rb);
+    bitWrite(portB, PB4, lb);
+
+    PORTB = portB;
+
+    // -------- PORTC --------
+    // A2 = RF
+
+    byte portC = PORTC;
+
+    bitWrite(portC, PC2, rf);
+
+    PORTC = portC;
+}
 
 //Turn off all LEDs
 void turnOffAllLEDs() {
@@ -48,122 +80,75 @@ void turnOffAllLEDs() {
 
 //Turn right
 void turnRight() {
-  digitalWrite(led_LF, LOW);
-  digitalWrite(led_RF, HIGH);
-  digitalWrite(led_LB, LOW);
-  digitalWrite(led_RB, LOW);
-
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, HIGH);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
+    setOutputs(
+        LOW, HIGH, LOW, LOW,
+        LOW, HIGH, LOW, LOW);
 }
 
 //Turn left
 void turnLeft() {
-  digitalWrite(led_LF, HIGH);
-  digitalWrite(led_RF, LOW);
-  digitalWrite(led_LB, LOW);
-  digitalWrite(led_RB, LOW);
-
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
+    setOutputs(
+        HIGH, LOW, LOW, LOW,
+        LOW, LOW, LOW, HIGH);
 }
 
 
 //Go backward
 void backward() {
-  digitalWrite(led_LF, LOW);
-  digitalWrite(led_RF, LOW);
-  digitalWrite(led_LB, HIGH);
-  digitalWrite(led_RB, HIGH);
-
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
+    setOutputs(
+        LOW, LOW, HIGH, HIGH,
+        HIGH, LOW, HIGH, LOW);
 }
+
 
 //Go forward
 void forward() {
-  digitalWrite(led_LF, HIGH);
-  digitalWrite(led_RF, HIGH);
-  digitalWrite(led_LB, LOW);
-  digitalWrite(led_RB, LOW);
-
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, HIGH);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
+    setOutputs(
+        HIGH, HIGH, LOW, LOW,
+        LOW, HIGH, LOW, HIGH);
 }
 
 //pins the robot in clockwise direction.
 void rotateCW() {
-  digitalWrite(led_LF, LOW);
-  digitalWrite(led_RF, LOW);
-  digitalWrite(led_LB, LOW);
-  digitalWrite(led_RB, HIGH);
-
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, HIGH);
-  digitalWrite(IN3, HIGH);
-  digitalWrite(IN4, LOW);
+    setOutputs(
+        LOW, LOW, LOW, HIGH,
+        LOW, HIGH, HIGH, LOW);
 }
 
 //Spins the robot in counter clockwise direction.
 void rotateCCW() {
-  digitalWrite(led_LF, LOW);
-  digitalWrite(led_RF, LOW);
-  digitalWrite(led_LB, HIGH);
-  digitalWrite(led_RB, LOW);
-
-  digitalWrite(IN1, HIGH);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, HIGH);
+    setOutputs(
+        LOW, LOW, HIGH, LOW,
+        HIGH, LOW, LOW, HIGH);
 }
 
 //Stop the robot
 void stop() {
-  turnOffAllLEDs();
-
-  digitalWrite(IN1, LOW);
-  digitalWrite(IN2, LOW);
-  digitalWrite(IN3, LOW);
-  digitalWrite(IN4, LOW);
+    setOutputs(
+        LOW, LOW, LOW, LOW,
+        LOW, LOW, LOW, LOW);
 }
 
 //Initialize robot pins related to it's movement
 void robotSetup() {
-  Serial.println("Init DRV8833 driver");
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
-  Serial.println("Init DRV8833 driver done");
 
-  Serial.println("Init LED");
   pinMode(led_LF, OUTPUT);
   pinMode(led_RF, OUTPUT);
   pinMode(led_LB, OUTPUT);
   pinMode(led_RB, OUTPUT);
-  Serial.println("Init LED done");
 
-  Serial.println("Init Car functions");
   stop();
-  Serial.println("Init Car functions done");
 }
 
 
 //Moves the robot
-void move(byte cmd) {
+void move(byte dir) {
 
-  Serial.print("Moving with: ");
-  Serial.println(cmd);
-
-  switch (cmd) {
+  switch (dir) {
 
     case Stop:
       stop();
@@ -194,7 +179,6 @@ void move(byte cmd) {
       break;
 
     default:
-      Serial.println("Error");
       stop();
       break;
   }

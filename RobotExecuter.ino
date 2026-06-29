@@ -1,4 +1,12 @@
-#define DEBUG 1 //For debugging purposses
+#define DEBUG 1 //For debugging purposes
+
+#if DEBUG
+  #define DBG_PRINT(x) Serial.print(x)
+  #define DBG_PRINTLN(x) Serial.println(x)
+#else
+  #define DBG_PRINT(x)
+  #define DBG_PRINTLN(x)
+#endif
 
 #include <SoftwareSerial.h>
 #include "RobotMovement.h"
@@ -33,12 +41,30 @@ enum CommandType : byte {
 #pragma region Arduino
 
 void setup() {
+  //Serials begin
   Serial.begin(9600);
   bleSerial.begin(9600);
+
+  //Robot setup
+  DBG_PRINTLN(F("Init DRV8833 driver"));
   robotSetup();
-  setupBarometricSensor(102500);
-  setupLumensSensor();
+  DBG_PRINTLN(F("Init DRV8833 driver done"));
+
+  //UV sensor setup
+  DBG_PRINTLN(F("Initializing UV sensor"));
+  setupUV();
+  DBG_PRINTLN(F("UV sensor initialized"));
+
+  //Barometric sensor setup
+  setupBarometricSensor(102500) ? DBG_PRINTLN(F("BMP085 initialized!")) : DBG_PRINTLN(F("BMP085 not found!"));
+
+  //Luminosity sensor setup
+  setupLumensSensor() ? DBG_PRINTLN(F("BH1750  initialized")) : DBG_PRINTLN(F("Error initialising BH1750"));
+
+  DBG_PRINTLN(F("Gas sensor warming up..."));
   setupGasSensor(A0, 5000);
+  DBG_PRINTLN(F("Gas sensor ready"));
+
   setupDTH11Sensor(13);
   setupGPS(3, A3);
 }
@@ -64,15 +90,15 @@ void loop() {
   }
 
   handleUltrasonicTask();
-  getFullScan();
+  //getFullScan();
 
   /*delay(10000);
-  Serial.println("Sending location");
+  DBG_PRINTLN(F("Sending location"));
   sendLocation(123456, 654321); */
 
 
 
-  delay(3000);
+  //delay(3000);
 }
 
 #pragma endregion Arduino
@@ -90,8 +116,8 @@ void handleUltrasonicTask() {
 
     float distance = get_distance();
 
-    Serial.print(F("Sending ultrasonic distance: "));
-    Serial.println(distance);
+    DBG_PRINT(F("Sending ultrasonic distance: "));
+    DBG_PRINTLN(distance);
 
     sendUltrasonicDistance(distance);
   }
@@ -99,33 +125,59 @@ void handleUltrasonicTask() {
 
 //Obtains a full scan
 void getFullScan() {
-  Serial.print(F("Stopping the robot for scanning"));
+
+  DBG_PRINT(F("Stopping the robot for scanning"));
   move(0);
-  getUVIndex();
-  getTemperature();
-  getPressure();
-  getAltitude();
-  getLumens();
-  getGasPercentage();
+
+  int UVIndex = getUVIndex();
+  DBG_PRINT(F("UV Index: "));
+  DBG_PRINTLN(UVIndex);
+  
+  float temperature = getTemperature();
+  DBG_PRINT(F("Temperature = "));
+  DBG_PRINTLN(F(" *C"));
+
+  long pressure = getPressure();
+  DBG_PRINT(F("Pressure = "));
+  DBG_PRINTLN(F(" Pa"));
+
+  float altitude = getAltitude();
+  DBG_PRINT(F("Altitude = "));
+  DBG_PRINTLN(F(" m"));
+
+  float lumens = getLumens();
+  if(lumens > 0) {
+    DBG_PRINT(F("Light: "));
+    DBG_PRINT(lumens);
+    DBG_PRINTLN(F(" lx"));
+  } else {
+      DBG_PRINTLN(F("Error condition detected"));
+  }
+  
+  uint16_t gas = getGasPercentage();
+  DBG_PRINT(F("Gas percentage: "));
+  DBG_PRINTLN(gas);
 
   DTH11Values dth11Values = getDTH11Values();
-  Serial.println(F("DTH11 values:"));
-  Serial.print(F("hdt: "));
-  Serial.print(dth11Values.humidity);
-  Serial.print(F(" temp: "));
-  Serial.println(dth11Values.temperature);
+  DBG_PRINTLN(F("DTH11 values:"));
+  DBG_PRINT(F("hdt: "));
+  DBG_PRINT(dth11Values.humidity);
+  DBG_PRINT(F(" temp: "));
+  DBG_PRINTLN(dth11Values.temperature);
 
   GPSValues gpsValues= getGPSValues();
-  Serial.print(F("Sat: "));
-  Serial.print(gpsValues.satellites);
-  Serial.print(F(" Alt: "));
-  Serial.print(gpsValues.altitude);
-  Serial.print(F(" Lat: "));
-  Serial.print(gpsValues.latitude);
-  Serial.print(F(" Lon: "));
-  Serial.print(gpsValues.longitude);
-  Serial.print(F(" Spd: "));
-  Serial.println(gpsValues.speed);
+  DBG_PRINT(F("Sat: "));
+  DBG_PRINT(gpsValues.satellites);
+  DBG_PRINT(F(" Alt: "));
+  DBG_PRINT(gpsValues.altitude);
+  DBG_PRINT(F(" Lat: "));
+  DBG_PRINT(gpsValues.latitude);
+  DBG_PRINT(F(" Lon: "));
+  DBG_PRINT(gpsValues.longitude);
+  DBG_PRINT(F(" Spd: "));
+  DBG_PRINTLN(gpsValues.speed);
+
+  DBG_PRINTLN(F("----------- END SCAN  -----------"));
 }
 
 
@@ -134,42 +186,46 @@ void elaborateCommand(const char* cmd) {
 
   //Safety check
   if (cmd == nullptr || strlen(cmd) == 0) {
-      Serial.println(F("Empty command"));
+      DBG_PRINTLN(F("Empty command"));
       return;
   }
 
   //Printing received command for debugging
-  Serial.print(F("Received command: "));
-  Serial.println(cmd);
+  DBG_PRINT(F("Received command: "));
+  DBG_PRINTLN(cmd);
 
   //In-depth command debug
   /*for (int i = 0; i < strlen(cmd); i++) {
-      Serial.print((int)cmd[i]);
-      Serial.print(" ");
+      DBG_PRINT((int)cmd[i]);
+      DBG_PRINT(F(" "));
   }
-  Serial.println();
-  Serial.print("LEN: ");
-  Serial.println(strlen(cmd));*/
+  DBG_PRINTLN();
+  DBG_PRINT(F("LEN: "));
+  DBG_PRINTLN(strlen(cmd));*/
 
   //Disconnection or connection
   if (strcmp(cmd, msgDisconnected) == 0 || strcmp(cmd, msgConnected) == 0) {
       move(0);  //Stopping the robot
-      Serial.println(F("stopped the robot for connection/disconnection"));
+      DBG_PRINTLN(F("stopped the robot for connection/disconnection"));
       return;
     }
 
   //Getting OPCODE
   char opcode = cmd[0];
-  Serial.print(F("Parsing opcode: "));
-  Serial.println(opcode);
+  DBG_PRINT(F("Parsing opcode: "));
+  DBG_PRINTLN(opcode);
 
   //Command parsing
   switch (opcode) {
+
     case Move:
+      DBG_PRINT(F("Moving with: "));
+      DBG_PRINTLN(cmd[1]);
       move(cmd[1]);
       break;
+
     default:
-      Serial.println(F("Unknown command"));
+      DBG_PRINTLN(F("Unknown command"));
   }
 }
 

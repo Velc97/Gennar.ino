@@ -1,2 +1,2 @@
 extern void robotSetup();
-extern void move(byte cmd);
+extern void move(byte dir);
